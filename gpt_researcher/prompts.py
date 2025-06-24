@@ -112,7 +112,12 @@ You MUST write all used source document names at the end of the report as refere
 
         tone_prompt = f"Write the report in a {tone.value} tone." if tone else ""
 
-        return f"""
+        russian_instruction = (
+            "ВАЖНО: Ты должен отвечать только на русском языке. Не используй английский язык ни при каких обстоятельствах. "
+            "Если в источниках встречается английский текст — не включай его в отчёт.\n"
+        )
+
+        return f"""{russian_instruction}
 Information: "{context}"
 ---
 Using the above information, answer the following query or task: "{question}" in a detailed report --
@@ -195,8 +200,13 @@ The response MUST not contain any markdown format or additional text (like ```js
             You MUST write all used source document names at the end of the report as references, and make sure to not add duplicated sources, but only one reference for each."
         """
 
+        russian_instruction = (
+            "ВАЖНО: Ты должен отвечать только на русском языке. Не используй английский язык ни при каких обстоятельствах. "
+            "Если в источниках встречается английский текст — не включай его в отчёт.\n"
+        )
+
         return (
-            f'"""{context}"""\n\nBased on the above information, generate a bibliography recommendation report for the following'
+            f'{russian_instruction} """{context}"""\n\nBased on the above information, generate a bibliography recommendation report for the following'
             f' question or topic: "{question}". The report should provide a detailed analysis of each recommended resource,'
             " explaining how each source can contribute to finding answers to the research question.\n"
             "Focus on the relevance, reliability, and significance of each source.\n"
@@ -214,7 +224,11 @@ The response MUST not contain any markdown format or additional text (like ```js
     def generate_custom_report_prompt(
         query_prompt, context, report_source: str, report_format="apa", tone=None, total_words=1000, language: str = "english"
     ):
-        return f'"{context}"\n\n{query_prompt}'
+        russian_instruction = (
+            "ВАЖНО: Ты должен отвечать только на русском языке. Не используй английский язык ни при каких обстоятельствах. "
+            "Если в источниках встречается английский текст — не включай его в отчёт.\n"
+        )
+        return f'{russian_instruction}\n"{context}"\n\n{query_prompt}'
 
     @staticmethod
     def generate_outline_report_prompt(
@@ -226,8 +240,29 @@ The response MUST not contain any markdown format or additional text (like ```js
         Returns: str: The outline report prompt for the given question and research summary
         """
 
+        reference_prompt = ""
+        if report_source == ReportSource.Web.value:
+            reference_prompt = f"""
+You MUST write all used source urls at the end of the report as references, and make sure to not add duplicated sources, but only one reference for each.
+Every url should be hyperlinked: [url website](url)
+Additionally, you MUST include hyperlinks to the relevant URLs wherever they are referenced in the report:
+
+eg: Author, A. A. (Year, Month Date). Title of web page. Website Name. [url website](url)
+"""
+        else:
+            reference_prompt = f"""
+You MUST write all used source document names at the end of the report as references, and make sure to not add duplicated sources, but only one reference for each."
+"""
+
+        tone_prompt = f"Write the report in a {tone.value} tone." if tone else ""
+
+        russian_instruction = (
+            "ВАЖНО: Ты должен отвечать только на русском языке. Не используй английский язык ни при каких обстоятельствах. "
+            "Если в источниках встречается английский текст — не включай его в отчёт.\n"
+        )
+
         return (
-            f'"""{context}""" Using the above information, generate an outline for a research report in Markdown syntax'
+            f'{russian_instruction} """{context}""" Using the above information, generate an outline for a research report in Markdown syntax'
             f' for the following question or topic: "{question}". The outline should provide a well-structured framework'
             " for the research report, including the main sections, subsections, and key points to be covered."
             f" The research report should be detailed, informative, in-depth, and a minimum of {total_words} words."
@@ -273,7 +308,12 @@ You MUST write all used source document names at the end of the report as refere
 
         tone_prompt = f"Write the report in a {tone.value} tone." if tone else ""
 
-        return f"""
+        russian_instruction = (
+            "ВАЖНО: Ты должен отвечать только на русском языке. Не используй английский язык ни при каких обстоятельствах. "
+            "Если в источниках встречается английский текст — не включай его в отчёт.\n"
+        )
+
+        return f"""{russian_instruction}
 Using the following hierarchically researched information and citations:
 
 "{context}"
@@ -403,7 +443,12 @@ and research data:
         tone: Tone = Tone.Objective,
         language: str = "english",
     ) -> str:
+        russian_instruction = (
+            "ВАЖНО: Ты должен отвечать только на русском языке. Не используй английский язык ни при каких обстоятельствах. "
+            "Если в источниках встречается английский текст — не включай его в отчёт.\n"
+        )
         return f"""
+{russian_instruction}
 Context:
 "{context}"
 
@@ -503,7 +548,11 @@ Provide the draft headers in a list format using markdown syntax, for example:
 
     @staticmethod
     def generate_report_introduction(question: str, research_summary: str = "", language: str = "english", report_format: str = "apa") -> str:
-        return f"""{research_summary}\n
+        russian_instruction = (
+            "ВАЖНО: Ты должен отвечать только на русском языке. Не используй английский язык ни при каких обстоятельствах. "
+            "Если в источниках встречается английский текст — не включай его в отчёт.\n"
+        )
+        return f"""{russian_instruction}{research_summary}\n
 Using the above latest information, Prepare a detailed report introduction on the topic -- {question}.
 - The introduction should be succinct, well-structured, informative with markdown syntax.
 - As this introduction will be part of a larger report, do NOT include any other sections, which are generally present in a report.
@@ -512,7 +561,6 @@ Using the above latest information, Prepare a detailed report introduction on th
 Assume that the current date is {datetime.now(timezone.utc).strftime('%B %d, %Y')} if required.
 - The output must be in {language} language.
 """
-
 
     @staticmethod
     def generate_report_conclusion(query: str, report_content: str, language: str = "english", report_format: str = "apa") -> str:
@@ -527,26 +575,31 @@ Assume that the current date is {datetime.now(timezone.utc).strftime('%B %d, %Y'
         Returns:
             str: A concise conclusion summarizing the report's main findings and implications.
         """
+        russian_instruction = (
+            "ВАЖНО: Ты должен отвечать только на русском языке. Не используй английский язык ни при каких обстоятельствах. "
+            "Если в источниках встречается английский текст — переведи его на русский и включи в отчёт.\n"
+        )
         prompt = f"""
-    Based on the research report below and research task, please write a concise conclusion that summarizes the main findings and their implications:
+{russian_instruction}
+Based on the research report below and research task, please write a concise conclusion that summarizes the main findings and their implications:
 
-    Research task: {query}
+Research task: {query}
 
-    Research Report: {report_content}
+Research Report: {report_content}
 
-    Your conclusion should:
-    1. Recap the main points of the research
-    2. Highlight the most important findings
-    3. Discuss any implications or next steps
-    4. Be approximately 2-3 paragraphs long
+Your conclusion should:
+1. Recap the main points of the research
+2. Highlight the most important findings
+3. Discuss any implications or next steps
+4. Be approximately 2-3 paragraphs long
 
-    If there is no "## Conclusion" section title written at the end of the report, please add it to the top of your conclusion.
-    You must use in-text citation references in {report_format.upper()} format and make it with markdown hyperlink placed at the end of the sentence or paragraph that references them like this: ([in-text citation](url)).
+If there is no "## Conclusion" section title written at the end of the report, please add it to the top of your conclusion.
+You must use in-text citation references in {report_format.upper()} format and make it with markdown hyperlink placed at the end of the sentence or paragraph that references them like this: ([in-text citation](url)).
 
-    IMPORTANT: The entire conclusion MUST be written in {language} language.
+IMPORTANT: The entire conclusion MUST be written in {language} language.
 
-    Write the conclusion:
-    """
+Write the conclusion:
+"""
 
         return prompt
 
