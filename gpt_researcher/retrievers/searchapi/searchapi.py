@@ -58,7 +58,7 @@ class SearchApiSearch():
         search_response = []
 
         try:
-            response = requests.get(encoded_url, headers=headers, timeout=20)
+            response = requests.get(encoded_url, headers=headers, timeout=20, verify=False)
             if response.status_code == 200:
                 search_results = response.json()
                 if search_results:

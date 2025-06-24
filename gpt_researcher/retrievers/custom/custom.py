@@ -54,6 +54,7 @@ class CustomRetriever:
     def _get_es_client(self) -> Elasticsearch:
         """Создание клиента ElasticSearch с поддержкой авторизации"""
         try:
+<<<<<<< Updated upstream
             if ES_USER and ES_PASS and ES_USER.lower() != 'none' and ES_PASS.lower() != 'none':
                 logger.info("Подключение к ElasticSearch с авторизацией")
                 es = Elasticsearch(
@@ -408,3 +409,11 @@ class CustomRetriever:
         except Exception as e:
             logger.error(f"Ошибка при выполнении поиска: {str(e)}")
             return []
+=======
+            response = requests.get(self.endpoint, params={**self.params, 'query': self.query}, verify=False)
+            response.raise_for_status()
+            return response.json()
+        except requests.RequestException as e:
+            print(f"Failed to retrieve search results: {e}")
+            return None
+>>>>>>> Stashed changes

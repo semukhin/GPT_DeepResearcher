@@ -53,7 +53,7 @@ class PubMedCentralSearch:
             "retmode": "json",
             "sort": "relevance"
         }
-        response = requests.get(base_url, params=params)
+        response = requests.get(base_url, params=params, verify=False)
 
         if response.status_code != 200:
             raise Exception(
@@ -96,7 +96,7 @@ class PubMedCentralSearch:
             "retmode": "xml",
             "api_key": self.api_key,
         }
-        response = requests.get(base_url, params=params)
+        response = requests.get(base_url, params=params, verify=False)
 
         if response.status_code != 200:
             raise Exception(

@@ -149,10 +149,58 @@ class GoogleSearch:
         Returns:
             List[Dict[str, str]]: Список результатов поиска
         """
+<<<<<<< Updated upstream
         results = []
         start_index = 1
         
         while len(results) < max_results:
+=======
+        # Get the API key
+        try:
+            api_key = os.environ["GOOGLE_CX_KEY"]
+        except:
+            raise Exception("Google CX key not found. Please set the GOOGLE_CX_KEY environment variable. "
+                            "You can get a key at https://developers.google.com/custom-search/v1/overview")
+        return api_key
+
+    def search(self, max_results=7):
+        """
+        Searches the query using Google Custom Search API, optionally restricting to specific domains
+        Returns:
+            list: List of search results with title, href and body
+        """
+        # Build query with domain restrictions if specified
+        search_query = self.query
+        if self.query_domains and len(self.query_domains) > 0:
+            domain_query = " OR ".join([f"site:{domain}" for domain in self.query_domains])
+            search_query = f"({domain_query}) {self.query}"
+
+        print("Searching with query {0}...".format(search_query))
+
+        url = f"https://www.googleapis.com/customsearch/v1?key={self.api_key}&cx={self.cx_key}&q={search_query}&start=1"
+        resp = requests.get(url, verify=False)
+
+        if resp.status_code < 200 or resp.status_code >= 300:
+            print("Google search: unexpected response status: ", resp.status_code)
+
+        if resp is None:
+            return
+        try:
+            search_results = json.loads(resp.text)
+        except Exception:
+            return
+        if search_results is None:
+            return
+
+        results = search_results.get("items", [])
+        search_results = []
+
+        # Normalizing results to match the format of the other search APIs
+        for result in results:
+            # skip youtube results
+            if "youtube.com" in result["link"]:
+                continue
+>>>>>>> Stashed changes
             try:
                 response = self._make_search_request(start_index)
                 
